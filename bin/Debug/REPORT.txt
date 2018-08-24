@@ -45,3 +45,5 @@
 300 Cash| 0 CC| hg666666 | 300.00 | MYR | Cash
 300 Cash| 0 CC| hg666666 | 300.00 | MYR | Cash
 300 Cash| 0 CC| hg666666 | 300.00 | MYR | Cash
+300 Cash| 0 CC| hg666666 | 300.00 | MYR | Cash
+600 Cash| 0 CC| hg666666 | 300.00 | MYR | Cash

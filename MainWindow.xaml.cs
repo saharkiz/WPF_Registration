@@ -612,6 +612,7 @@ namespace VRegistration
                     txtCashRecived.Text = "0.00";
                     txtCashAmt.Text = "0.00";
                     txtChangeAmt.Text = "0.00";
+                    btnReceive.IsEnabled = false;
                     // else
                     //  txtScan.Text = txtRegIRID.Text + "----" + mycard.verifyCard("5");
                 }
