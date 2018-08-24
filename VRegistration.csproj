@@ -84,7 +84,6 @@
     <Compile Include="BLL\BusinessCommands.cs" />
     <Compile Include="BLL\Card.cs" />
     <Compile Include="BLL\CardConnector.cs" />
-    <Compile Include="BLL\CashChoice.cs" />
     <Compile Include="BLL\EnumConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
