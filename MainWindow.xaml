@@ -19,7 +19,7 @@
             <ColumnDefinition Width="12*"/>
             <ColumnDefinition Width="69*"/>
         </Grid.ColumnDefinitions>
-        <Label Content="V-Convention 2018" HorizontalAlignment="Left" Margin="25,889,0,0" VerticalAlignment="Top" Width="164" FontSize="18" FontFamily="Segoe UI Semibold" FontWeight="Bold" Grid.Column="4" Height="31"/>
+        <Label Content="V-Convention 2018" HorizontalAlignment="Left" Margin="19.333,789,0,0" VerticalAlignment="Top" Width="164" FontSize="18" FontFamily="Segoe UI Semibold" FontWeight="Bold" Grid.Column="4" Height="31"/>
         <TabControl x:Name="tbcMain" HorizontalAlignment="Left" Height="684" Margin="40,32,0,0" VerticalAlignment="Top" Width="801" Grid.ColumnSpan="3" Grid.Column="1">
             <TabItem x:Name="tabLogin" Header="Login" Height="23" VerticalAlignment="Bottom">
                 <Grid Background="#FFE5E5E5">
@@ -144,20 +144,45 @@
                     <Rectangle Fill="#FFF39C12" HorizontalAlignment="Left" Height="10" VerticalAlignment="Top" Width="795" RadiusY="48" RadiusX="5" Grid.ColumnSpan="3" Margin="0,1,0,0"/>
                     <Label Content="Enter IR ID:
                            " Grid.Column="1" HorizontalAlignment="Left" Margin="62,44,0,0" VerticalAlignment="Top" Width="126"/>
-                    <Grid x:Name="gridnewresult" Grid.Column="1" HorizontalAlignment="Left" Height="209" Margin="43,185,0,0" VerticalAlignment="Top" Width="673" Background="#FFF39C12" Grid.ColumnSpan="2">
-                        <Button Content="OK" HorizontalAlignment="Left" Margin="245,120,0,0" VerticalAlignment="Top" Width="176" Click="Button_Click_7" Height="52"/>
-                        <Label x:Name="txtnewresult" Content="RESULT" Margin="71,21,0,0" VerticalAlignment="Top" Width="540" FontSize="48" HorizontalAlignment="Center"/>
-                    </Grid>
                     <Label Content="Email address" HorizontalAlignment="Stretch" Margin="62,151,73.333,0" VerticalAlignment="Top" RenderTransformOrigin="-0.34,0.348" FontSize="18" x:Name="txtemailaddress_Copy" Grid.Column="1" />
-                    <Label Content="Full Name" HorizontalAlignment="Stretch" Margin="62,113,13.333,0" VerticalAlignment="Top" RenderTransformOrigin="-0.34,0.348" FontSize="18" x:Name="txtfullname_Copy" Grid.Column="1" />
+                    <Label Content="Full Name" HorizontalAlignment="Stretch" Margin="65,118,10.333,0" VerticalAlignment="Top" RenderTransformOrigin="-0.34,0.348" FontSize="18" x:Name="txtfullname_Copy" Grid.Column="1" />
+
+                    <Grid x:Name="gridnewresult" Grid.Column="1" HorizontalAlignment="Left" Height="310" Margin="125,33,0,0" VerticalAlignment="Top" Width="571" Background="#FFF39C12" Grid.ColumnSpan="2" MouseDown="Grid_MouseDownpopup" MouseMove="Grid_MouseMove" MouseUp="Grid_MouseUp">
+                        <Grid.RenderTransform>
+                            <TranslateTransform/>
+                        </Grid.RenderTransform>
+                        <Button Content="Receive Payment/Do Scan" HorizontalAlignment="Left" Margin="44,230,0,0" VerticalAlignment="Top" Width="222" Click="Button_Click_7" Height="52" IsEnabled="False" Name="btnReceive"/>
+                        <Label Content="Cash Exchanged :" HorizontalAlignment="Left" Margin="146,114,0,0" VerticalAlignment="Top" Width="120"/>
+                        <Label Content="Change:" HorizontalAlignment="Left" Margin="146,174,0,0" VerticalAlignment="Top" Width="120"/>
+                        <TextBox HorizontalAlignment="Left" Height="28" Margin="266,116,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="60" Name="txtCashAmt" IsReadOnly="True"/>
+                        <TextBox HorizontalAlignment="Left" Height="28" Margin="226,175,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="99" IsReadOnly="True" Name="txtChangeAmt" FontSize="16" FontWeight="Bold"/>
+                        <Label Content="Insufficient Funds to Pay for Package" HorizontalAlignment="Left" Margin="261,45,0,0" VerticalAlignment="Top" Width="259" Name="lblNoFunds" FontWeight="Bold" Foreground="#FF0000" Visibility="Hidden"/>
+                        <Label Content="0.00" HorizontalAlignment="Left" Margin="373,106,0,0" VerticalAlignment="Top" Name="lblHold" Visibility="Hidden"/>
+                        <Label Content="Cash Recieved :" HorizontalAlignment="Left" Margin="56,52,0,0" VerticalAlignment="Top" Width="120"/>
+                        <TextBox HorizontalAlignment="Left" Height="28" Margin="191,53,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="135" x:Name="txtCashRecived" FontSize="18" />
+                        <Label Content="USD/AED/EUR/MYR" HorizontalAlignment="Left" Margin="331,54,0,0" VerticalAlignment="Top" Name="lblRecived"/>
+                        <Label Content="USD" HorizontalAlignment="Left" Margin="331,115,0,0" VerticalAlignment="Top" x:Name="lblRecived_Copy"/>
+                        <Label Content="USD/AED/EUR/MYR" HorizontalAlignment="Left" Margin="331,178,0,0" VerticalAlignment="Top" x:Name="lblRecived_Copy1"/>
+                        <Label Content="Amount Due :" HorizontalAlignment="Left" Margin="56,18,0,0" VerticalAlignment="Top" Width="120"/>
+                        <TextBox HorizontalAlignment="Left" Height="28" Margin="191,19,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="140" x:Name="txtCashRequired"  IsReadOnly="True" FontSize="16" />
+                        <Label Content="USD/AED/EUR/MYR" HorizontalAlignment="Left" Margin="336,19,0,0" VerticalAlignment="Top" x:Name="lblRecived_Copy2"/>
+                        <Button Content="Exchange to USD" HorizontalAlignment="Left" Margin="271,230,0,0" VerticalAlignment="Top" Width="222" Height="52" Click="Button_Click_12"/>
+                        <Grid HorizontalAlignment="Left" Height="35" Margin="524,17,0,0" VerticalAlignment="Top" Width="43" Background="White">
+                            <Grid.OpacityMask>
+                                <ImageBrush ImageSource="Images/CloseIcon.png"/>
+                            </Grid.OpacityMask>
+                        </Grid>
+                        <Button Content="X" HorizontalAlignment="Left" Margin="521,1,0,0" VerticalAlignment="Top" Width="48" Height="49" Background="{x:Null}" BorderBrush="{x:Null}" Click="Button_Click_13"/>
+                    </Grid>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tabReport" Header="Report" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="135" Margin="-22,0,0,-0.333">
+            <TabItem x:Name="tabReport" Header="Report" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="135" Margin="-22,0,0,-0.333" GotFocus="tabReport_GotFocus">
                 <Grid Background="#FFE5E5E5">
-                    <DataGrid HorizontalAlignment="Left" Height="633" Margin="10,10,0,0" VerticalAlignment="Top" Width="775"/>
+                    <DataGrid HorizontalAlignment="Left" ColumnWidth="*" Height="589" Margin="10,54,0,0" VerticalAlignment="Top" Width="775" Name="datagridreport"/>
+                    <Label Content="Registrar End of Day Report" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Semibold" FontSize="22" Foreground="#DD0E0E0E" RenderTransformOrigin="0.887,0.176" FontStyle="Oblique" FontWeight="Bold" OpacityMask="Black"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Search" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="130" Margin="-287.333,0,0,-0.333">
+            <TabItem x:Name="tabSearch" Header="Search" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="130" Margin="-287.333,0,0,-0.333">
                 <Grid Background="#FFE5E5E5">
                     <TextBox x:Name="txtsearchscan" HorizontalAlignment="Left" Height="36" Margin="85,122,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="254"/>
                     <Label Content="Scan Wristband: " HorizontalAlignment="Left" Margin="85,93,0,0" VerticalAlignment="Top"/>
@@ -181,7 +206,7 @@
                 </Ellipse.OpacityMask>
             </Ellipse>
             <Label x:Name="registrar" Content="***************" HorizontalAlignment="Left" Margin="88,28,-3,0" VerticalAlignment="Top" Width="146" FontSize="16" Foreground="#DDFFFBFB" Height="34"/>
-            <Label Content="Online" HorizontalAlignment="Left" Margin="109,54,0,0" VerticalAlignment="Top" Background="{x:Null}" Foreground="#DDFDFDFD"/>
+            <Label x:Name="statusLine" Content="Disconnected" HorizontalAlignment="Left" Margin="109,54,0,0" VerticalAlignment="Top" Background="{x:Null}" Foreground="#DDFDFDFD"/>
             <Grid HorizontalAlignment="Left" Height="47" Margin="0,95,0,0" VerticalAlignment="Top" Width="231" Background="#FF1A2226">
                 <Label Content="MAIN NAVIGATION" HorizontalAlignment="Left" Margin="11,8,0,0" VerticalAlignment="Top" Foreground="#FF4B646F"/>
             </Grid>
@@ -190,7 +215,7 @@
         <Grid HorizontalAlignment="Left" Height="74" Margin="-1,-16,0,0" VerticalAlignment="Top" Width="231" Background="#FF367FA9" Grid.ColumnSpan="2">
             <Label Content="VEINS" HorizontalAlignment="Left" Margin="65,25,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Semibold" FontSize="22" Foreground="#DDF5F5F5" RenderTransformOrigin="0.887,0.176" FontStyle="Oblique" FontWeight="Bold"/>
         </Grid>
-        <Grid HorizontalAlignment="Left" Height="74" Margin="36.667,-39,-26.333,0" VerticalAlignment="Top" Width="1041" Background="#FF3C8DBC" Grid.ColumnSpan="4" Grid.Column="1" MouseDown="Grid_MouseDown">
+        <Grid HorizontalAlignment="Left" Height="74" Margin="36.667,-16,-26.333,0" VerticalAlignment="Top" Width="1041" Background="#FF3C8DBC" Grid.ColumnSpan="4" Grid.Column="1" MouseDown="Grid_MouseDown">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="722*"/>
                 <ColumnDefinition Width="291*"/>
@@ -204,14 +229,13 @@
             <Label x:Name="lblTime" Content="00:00:00" HorizontalAlignment="Left" Margin="116,32,0,0" VerticalAlignment="Top" Height="26" Width="108" Foreground="#DDF3ECEC" FontFamily="Segoe UI Emoji"/>
         </Grid>
         <Ellipse Fill="#FF3C763D" HorizontalAlignment="Left" Height="13" Margin="92,120,0,0" Stroke="Black" VerticalAlignment="Top" Width="13"/>
-        <RichTextBox Grid.Column="4" HorizontalAlignment="Left" Height="138" Margin="0,63,0,0" VerticalAlignment="Top" Width="206">
+        <RichTextBox Grid.Column="4" HorizontalAlignment="Left" Height="653" Margin="0.333,63,-0.333,0" VerticalAlignment="Top" Width="206">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="Clipboard"/>
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Button Content="Copy to Clipboard" Margin="1,201,0,0" VerticalAlignment="Top" Height="35" Grid.Column="4" Background="#FF3C8DBC" Foreground="#DDFFFFFF"/>
         <Grid x:Name="plnav" HorizontalAlignment="Left" Height="277" Margin="-1,200,0,0" VerticalAlignment="Top" Width="231" Background="#FF222D32" Grid.ColumnSpan="2">
             <Rectangle HorizontalAlignment="Left" Height="190" Margin="14,632,0,0" VerticalAlignment="Top" Width="197">
                 <Rectangle.Fill>
@@ -249,14 +273,20 @@
                     <ImageBrush ImageSource="Images/CloseIcon.png"/>
                 </Grid.OpacityMask>
             </Grid>
+            <Button Content="Search" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Width="212" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#DDFFFFFF" Click="Button_Click_14"/>
+            <Grid HorizontalAlignment="Left" Height="20" Margin="15,164,0,0" VerticalAlignment="Top" Width="21" Background="White">
+                <Grid.OpacityMask>
+                    <ImageBrush ImageSource="Images/calcIcon.png"/>
+                </Grid.OpacityMask>
+            </Grid>
         </Grid>
         <Grid Grid.Column="1" HorizontalAlignment="Left" Height="165" Margin="49,721,0,0" VerticalAlignment="Top" Width="786" Grid.ColumnSpan="3" Background="White">
             <Label Content="Cash Collected:" HorizontalAlignment="Left" Margin="30,32,0,0" VerticalAlignment="Top" FontSize="18"/>
             <Label Content="CC Collected:" HorizontalAlignment="Left" Margin="30,71,0,0" VerticalAlignment="Top" FontSize="18"/>
             <Label Content="Tickets Issued:" HorizontalAlignment="Left" Margin="30,105,0,0" VerticalAlignment="Top" FontSize="18"/>
             <Label x:Name="txtoutercashcollected" Content="0" HorizontalAlignment="Left" Margin="184,32,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="182" Foreground="#FF066FAC"/>
-            <Label x:Name="txtoutercccollected" Content="0 USD" HorizontalAlignment="Left" Margin="184,71,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="182" Foreground="#FF066FAC"/>
-            <Label Content="0" HorizontalAlignment="Left" Margin="184,105,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="182" Foreground="#FF066FAC"/>
+            <Label x:Name="txtoutercccollected" Content="0" HorizontalAlignment="Left" Margin="184,71,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="182" Foreground="#FF066FAC"/>
+            <Label Name="txtTicketIssued" Content="0" HorizontalAlignment="Left" Margin="184,105,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="182" Foreground="#FF066FAC"/>
             <Label Content="Previous Transaction" HorizontalAlignment="Left" Margin="467,32,0,0" VerticalAlignment="Top" FontSize="18"/>
             <Label x:Name="txtprevirid" Content="NO IR ID" HorizontalAlignment="Left" Margin="591,66,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="182" Foreground="#FF00A65A"/>
             <Label x:Name="txtprevticket" Content="NO Ticket Issued" HorizontalAlignment="Left" Margin="591,105,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="182" Foreground="#FF00A65A"/>
@@ -264,6 +294,9 @@
             <Label Content="Ticket No:" HorizontalAlignment="Left" Margin="467,105,0,0" VerticalAlignment="Top" FontSize="18"/>
             <Rectangle Fill="#FF00A65A" HorizontalAlignment="Left" Height="10" Margin="0,1,0,0" VerticalAlignment="Top" Width="786" RadiusY="48" RadiusX="5"/>
             <Grid HorizontalAlignment="Left" Height="10" Margin="0,5,0,0" VerticalAlignment="Top" Width="786" Background="#FF00A65A"/>
+            <Label x:Name="txtoutercashcurrency" Content="USD" HorizontalAlignment="Left" Margin="271,32,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="82" Foreground="#FF066FAC"/>
+            <Label x:Name="txtoutercccurrency" Content="USD" HorizontalAlignment="Left" Margin="271,71,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Width="82" Foreground="#FF066FAC"/>
+
         </Grid>
         <ProgressBar x:Name="pbprogress" HorizontalAlignment="Left" Height="30" Margin="10,860,0,0" VerticalAlignment="Top" Width="205" Grid.ColumnSpan="2"/>
     </Grid>
