@@ -294,14 +294,15 @@ namespace VRegistration.BLL
             }
             else
             {
-                cardUID = BitConverter.ToString(receivedUID.Take(7).Reverse().ToArray()).ToLower();
+                cardUID = BitConverter.ToString(receivedUID.Take(5).ToArray()).ToLower();
                 //remove dashes
-                cardUID = BitConverter.ToString(receivedUID.Take(7).Reverse().ToArray()).Replace("-", string.Empty).ToLower();
+                cardUID = BitConverter.ToString(receivedUID.Take(5).Reverse().ToArray()).Replace("-", string.Empty).ToLower();
+
                 //get in reverse
                 //cardUID = BitConverter.ToString(receivedUID.Take(4).ToArray()).Replace("-", string.Empty).ToLower();
             }
 
-            return cardUID;
+            return new string (cardUID.Reverse().ToArray());
         }
         public void SelectDevice()
         {
