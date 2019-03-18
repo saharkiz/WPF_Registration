@@ -21,8 +21,6 @@ using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Threading;
-using System.IO;
-using System.Data;
 
 namespace VRegistration
 {
@@ -31,16 +29,12 @@ namespace VRegistration
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const string V = "NO DATA FOUND.";
         private CardConnector mycard;
         DispatcherTimer timer = new DispatcherTimer();
         //ProgressBar pbprogress = new ProgressBar();
         private int time = 1;
-        private double rate = 0.00;
         private bool started = false;
         private bool canAdd = true;
-        private bool exchangeAdd = true;
-        string file = @"REPORT.csv";
 
         // Used to hold the default color of textboxes
         private Brush colorHolder;
@@ -52,47 +46,27 @@ namespace VRegistration
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (lblBookingID.Content.ToString() == V)
-             {
-                MessageBox.Show("Cannot Proceed without a VALID Booking.", "VEINS", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            if (txtrfid.Text.Trim().Length == 0)
+            {
+                MessageBox.Show("There was a previously scanned RFID");
                 return;
-             }
+            }
+
+            //connect Card Reader
             if (mycard.connectCard())
             {
                 //read the card UID
                 string cardUID = mycard.getcardUID();
                 txtrfid.Text = cardUID; //displaying on RFID Field
 
-                mycard.submitText(txtirid.Text, "5"); // 5 - is the block we are writing data on the card
-
-                mycard.submitText("_DTCM_", "8"); // DTCM
-                mycard.submitText(atsCryptography.EncryptIt(txtirid.Text), "6"); //Encrypted
-
                 if (txtrfid.Text.Trim().Length == 0 || txtirid.Text.Trim().Length == 0)
                 {
-                    MessageBox.Show("Cannot have blank IRID or RFID", "VEINS", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Cannot have blank IRID or RFID");
                     return;
                 }
-                else { 
-                    txtrfid.Text = txtrfid.Text +  mycard.verifyCard("5");
-                }
 
-                //TO DO FILE CSV ADD
-                string txt = txtirid.Text + ","
-               + lblBookingID.Content + "," + txtirid_Copy.Text + "," + txtrfid.Text;
-
-                File.AppendAllText(file, txt + Environment.NewLine);
-
-                //Proceed with Checkin
-                MessageBox.Show(BusinessCommands.CheckInWizard(txtrfid.Text, lblBookingID.Content.ToString(), 
-                    txtirid.Text, txtirid_Copy.Text, txtirid_Copy1.Text, registrar.Content.ToString()));
+                //MessageBox.Show(BusinessCommands.CheckInWizard());
             }
-            else
-            {
-                txtrfid.Text = "INVALID";
-                MessageBox.Show("Reader not Present. Please check reader", "VEINS", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            
         }
 
         /// <summary>
@@ -118,8 +92,8 @@ namespace VRegistration
                 tabCheckIn.Visibility = tabNewRegistration.Visibility = btnLogout.Visibility = plnav.Visibility = Visibility.Visible;
                 
                 tbcMain.SelectedItem = tabCounter;
-                registrar.Content = txtusername.Text.ToUpper();
-                statusLine.Content = "ONLINE";
+                registrar.Content = txtusername.Text;
+
                 txtusername.Clear();
                 PasswordBox.Clear();
                 txtusername.Background = PasswordBox.Background = colorHolder;
@@ -166,19 +140,15 @@ namespace VRegistration
                 Loading();
                 if (data != "[]")
                 {
-                    JArray irdetailitem = JArray.Parse(data); 
+                    JArray irdetailitem = JArray.Parse(data);
                     txtfullname.Content = irdetailitem[0]["irname"].ToString();
                     txtemailaddress.Content = irdetailitem[0]["email"].ToString();
-                    txtfullname_Copy.Content = irdetailitem[0]["irname"].ToString();
-                    txtemailaddress_Copy.Content = irdetailitem[0]["email"].ToString();
                     //txtrfid.Focus();
                 }
                 else
                 {
                     txtemailaddress.Content = "NO DATA FOUND.";
                     txtfullname.Content = "NO DATA FOUND.";
-                    txtemailaddress_Copy.Content = "NO DATA FOUND.";
-                    txtfullname_Copy.Content = "NO DATA FOUND.";
                 }
             }
             else
@@ -230,12 +200,6 @@ namespace VRegistration
             txtPayReference.Clear();
             txtNotes.Clear();
             txtScan.Clear();
-            txtfullname_Copy.Content = "";
-            txtemailaddress_Copy.Content = "";
-            gridnewresult.Visibility = Visibility.Collapsed;
-            //txtnewresult.Content = "";
-
-            gridsearch.Visibility = Visibility.Hidden;
         }
 
         /// <summary>
@@ -302,11 +266,6 @@ namespace VRegistration
                     lbltitle.Content = irdetailitem[0]["title"].ToString(); ;
                     lblBookingID.Content = irdetailitem[0]["BookingID"].ToString();
                 }
-                else
-                {
-                    lbltitle.Content =V;
-                    lblBookingID.Content = V;
-                }
 
                 return data;
             }
@@ -335,7 +294,6 @@ namespace VRegistration
             time = 0;
             lblTime.Content = "00:00:00";
             registrar.Content = "***************";
-            statusLine.Content = "OFFLINE";
 
             tabLogin.Visibility = Visibility.Visible;
             tbcMain.SelectedItem = tabLogin;
@@ -368,17 +326,17 @@ namespace VRegistration
         private void txtRegIRID_TextChanged(object sender, TextChangedEventArgs e)
         {
             //verify 8 length
-            if (txtRegIRID.Text.Count() == 8)
+            if (txtirid.Text.Count() == 8)
             {
                 getIRDetails(txtRegIRID.Text);
                 string result = GetIRBooking(txtRegIRID.Text);
 
-                //Loading();
+                Loading();
                 if (result != "[]")
                 {
-                    MessageBox.Show("IR has a Booking. Cannot Proceed.", "VEINS", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("IR has a Booking. Cannot Proceed.");
                 }
-                //Loading();
+                Loading();
             }
         }
 
@@ -408,84 +366,43 @@ namespace VRegistration
             string packageValue = holder.Value;
 
             if (txtRegIRID.Text.Trim().Length != 8 || packageValue.Trim().Length == 0
-                || GetCurrency() == null || GetPayMode() == null || txtfullname_Copy.Content.ToString() == V)
+                || GetCurrency() == null || GetPayMode() == null)
             {
                 // Would need to add some visual cues on what fields are required
-                MessageBox.Show("Please properly fill in the fields", "VEINS", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please properly fill in the fields");
                 return;
             }
-
-                PayBooking(Convert.ToDouble(packageValue));
-                Loading();
-                
-            }
-            catch(Exception ex)
+            
+            //open and read the card rfiD
+            //connect Card Reader
+            if (mycard.connectCard())
             {
-                MessageBox.Show("Please properly fill in the fields", "VEINS", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-        private void loadLocalSummary()
-        {
-            KeyValuePair<string, string> holder = (KeyValuePair<string, string>)cbxPackage.SelectedItem;
-            string packageValue = holder.Value;
+                //read the card UID
+                string cardUID = mycard.getcardUID();
+                txtScan.Text = cardUID; //displaying on RFID Field
 
-            if (GetPayMode() == "Cash")
-            {
-                //txtoutercashcollected.Content.ToString().Remove(txtoutercashcollected.Content.ToString().Length - 3);
-                txtoutercashcollected.Content = (Convert.ToDouble(txtoutercashcollected.Content) + Convert.ToDouble(packageValue)); //+"\t" + GetCurrency()
-                txtoutercashcurrency.Content = GetCurrency();
-            }
-            else if (GetPayMode() == "CC")
-            {
-                txtoutercccollected.Content = (Convert.ToDouble(txtoutercccollected.Content) + Convert.ToDouble(packageValue)); //+"\t" + GetCurrency()
-                txtoutercccurrency.Content = GetCurrency();
-            }
-            txtprevirid.Content = txtRegIRID.Text;
-            txtTicketIssued.Content = Convert.ToInt16(txtTicketIssued.Content) + 1;
-            // txtprevticket.Content = txtScan.Text;
-
-            string txt = txtRegIRID.Text + ","
-               + packageValue.ToString() + "," + GetCurrency() + "," + GetPayMode();
-
-            File.AppendAllText(file, txt + Environment.NewLine);
-
-            txtoutercashcollected.Content = Convert.ToDouble(txtoutercashcollected.Content) + Convert.ToDouble(packageValue);
-            txtprevirid.Content = txtRegIRID.Text;
-            txtprevticket.Content = txtScan.Text;
-        }
-        // async function here //async
-        private void PayBooking(double val)
-        {
-            string data = "1";// await Task.Run(() => Execute_PayBooking(this));
-            if (data == "1")
-            {
-                JArray value = JArray.Parse(BusinessCommands.getExchangeList());
-                for (int i = 0; i < value.Count; i++)
+                if (txtrfid.Text.Trim().Length == 0 || txtirid.Text.Trim().Length == 0)
                 {
-                    if ((string)value[i]["currency"] == GetCurrency())
-                    {
-                        rate = (double)value[i]["rate"];
-
-                        //Console.WriteLine(value[i]["rate"]);
-                        break;
-                    }
-
+                    MessageBox.Show("Cannot have blank IRID or RFID");
+                    return;
                 }
-                gridnewresult.Visibility = Visibility.Visible;
-                lblHold.Content = val;
-                lblRecived.Content = GetCurrency();
-                lblRecived_Copy1.Content = GetCurrency();
-                lblRecived_Copy2.Content = GetCurrency();
-                txtCashRequired.Text = (Math.Round((val * rate), 2)).ToString();
-                txtChangeAmt.Text = "0.00";
-                btnReceive.IsEnabled = false;
 
-                txtCashRecived.Text = "";
-                txtCashRecived.Focus(); //focus on cash recieved
-                //txtnewresult.Content = "IR ID Registered";
-                //reset();
-
+                PayBooking();
+                //show new booking id
+                // Where should I display the new booking ID?
             }
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("Please properly fill in the fields");
+            }
+        }
+
+        // async function here
+        private async void PayBooking()
+        {
+            Loading();
+            string data = await Task.Run(() => Execute_PayBooking(this));
         }
 
         internal string Execute_getIRDetails(MainWindow gui, string ir)
@@ -543,194 +460,16 @@ namespace VRegistration
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             tbcMain.SelectedItem = tabCheckIn;
-            tabCheckIn.Focus();
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             tbcMain.SelectedItem = tabNewRegistration;
-            tabNewRegistration.Focus();
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             logout();
-        }
-
-        private void Button_Click_6(object sender, RoutedEventArgs e)
-        {
-            tbcMain.SelectedItem = tabReport;
-            tabReport.Focus();
-        }
-
-        private void Button_Click_7(object sender, RoutedEventArgs e)
-        {
-
-            KeyValuePair<string, string> holder = (KeyValuePair<string, string>)cbxPackage.SelectedItem;
-            string packageValue = holder.Value;
-            //open and read the card rfiD
-            //connect Card Reader
-            if (mycard.connectCard())
-            {
-                //read the card UID
-                string cardUID = mycard.getcardUID();
-                txtScan.Text = cardUID; //displaying on RFID Field
-
-                if (txtScan.Text.Trim().Length == 0 || txtRegIRID.Text.Trim().Length == 0)
-                {
-                    MessageBox.Show("Cannot have blank IRID or RFID", "VEINS", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                //get the booking id and write to card TODO
-                //show new booking id
-                mycard.submitText(txtRegIRID.Text, "5"); // 5 - is the block we are writing data on the card
-                
-                mycard.submitText("_DTCM_", "8"); // DTCM
-                mycard.submitText(atsCryptography.EncryptIt(txtRegIRID.Text), "6"); //Encrypted
-
-                loadLocalSummary();
-                reset();
-            }
-            else
-            {
-                MessageBox.Show("Reader not Present. Please check reader", "VEINS", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void Button_Click_8(object sender, RoutedEventArgs e)
-        {
-
-            txtsearchirid.Text = "";
-            txtsearchdtcm.Text = "";
-            Loading();
-
-            //connect Card Reader
-            if (mycard.connectCard())
-            {
-                //read the card UID
-                string cardUID = mycard.getcardUID();
-                txtsearchscan.Text = cardUID;
-                string savedIr = mycard.verifyCard("5");
-                txtsearchirid.Text = savedIr;
-                txtsearchdtcm.Text = mycard.verifyCard("8");
-
-                string encryptedDataVerification = mycard.verifyCard("6");
-                string newirid = atsCryptography.DecryptIt(encryptedDataVerification); //DeEncrypted
-                if (newirid != savedIr)
-                {
-                    MessageBox.Show("Encryption does not Match: " + newirid, "VEINS", MessageBoxButton.OK, MessageBoxImage.Stop);
-                    return;
-                }
-
-            }
-            else
-            {
-                MessageBox.Show("Reader not Present. Please check reader", "VEINS", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            //verify with bookings
-            gridsearch.Visibility = Visibility.Visible;
-            btnSearchVerify.Visibility = Visibility.Hidden;
-            Loading();
-            txtsearchscan.Focus();
-        }
-
-        private void Button_Click_9(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://qnet.net?id=" + txtsearchirid.Text);
-        }
-
-        private void Button_Click_10(object sender, RoutedEventArgs e)
-        {
-            if (mycard.connectCard())
-            {
-                mycard.submitText(txtsearchirid.Text, "5"); // 5 - is the block we are writing data on the card
-                mycard.submitText(txtsearchdtcm.Text, "6"); // 6 - is the block we are writing data on the card
-               
-
-                MessageBox.Show("Write Done. Click to Verify", "VEINS", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
-
-        private void Button_Click_11(object sender, RoutedEventArgs e)
-        {
-            reset();
-            btnSearchVerify.Visibility = Visibility.Visible;
-            txtsearchscan.Text = "";
-
-            txtsearchirid.Text = "";
-            txtsearchdtcm.Text = "";
-        }
-        private void Button_Click_12(object sender, RoutedEventArgs e)
-        {
-            txtCashAmt.Text = (Math.Round(Convert.ToDouble(txtCashRecived.Text) / rate, 2)).ToString();
-            if (Convert.ToDouble(txtCashAmt.Text) < Convert.ToDouble(lblHold.Content))
-                lblNoFunds.Visibility = Visibility.Visible;
-            else
-            {
-                lblNoFunds.Visibility = Visibility.Hidden;
-                btnReceive.IsEnabled = true;
-                Loading();
-                GetChange(rate);
-            }
-        }
-        private void GetChange(double val)
-        {
-            txtChangeAmt.Text = Math.Round(((Convert.ToDouble(txtCashAmt.Text) - Convert.ToDouble(lblHold.Content)) * val), 2).ToString();
-            lblNoFunds.Visibility = Visibility.Hidden;
-        }
-
-        #region grid move gridnewresult
-        Point m_start;
-        Vector m_startOffset;
-
-        private void Grid_MouseDownpopup(object sender, MouseButtonEventArgs e)
-        {
-            FrameworkElement element = sender as Grid;
-            TranslateTransform translate = element.RenderTransform as TranslateTransform;
-
-            m_start = e.GetPosition(gridnewresult);
-            m_startOffset = new Vector(translate.X, translate.Y);
-            element.CaptureMouse();
-        }
-
-        private void Grid_MouseMove(object sender, MouseEventArgs e)
-        {
-            FrameworkElement element = sender as Grid;
-            TranslateTransform translate = element.RenderTransform as TranslateTransform;
-
-            if (element.IsMouseCaptured)
-            {
-                Vector offset = Point.Subtract(e.GetPosition(gridnewresult), m_start);
-
-                translate.X = m_startOffset.X + offset.X;
-                translate.Y = m_startOffset.Y + offset.Y;
-            }
-        }
-
-        private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            FrameworkElement element = sender as Grid;
-            element.ReleaseMouseCapture();
-        }
-        #endregion
-
-        private void Button_Click_13(object sender, RoutedEventArgs e)
-        {
-            //reset button for popup and all else fail
-            reset();
-        }
-
-        private void tabReport_GotFocus(object sender, RoutedEventArgs e)
-        {
-            DataSet ds = atsCryptography.csvConvert(file, "report", ",");
-            datagridreport.ItemsSource = new DataView(ds.Tables["report"]);
-        }
-
-        private void Button_Click_14(object sender, RoutedEventArgs e)
-        {
-            tbcMain.SelectedItem = tabSearch;
         }
     }
 }

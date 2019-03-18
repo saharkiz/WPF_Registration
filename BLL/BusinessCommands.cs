@@ -30,6 +30,15 @@ namespace VRegistration.BLL
 
             request.AddParameter(paramTuple.Item1, paramTuple.Item2, ParameterType.RequestBody);
 
+            //remove and fix with above code
+            //request.AddHeader("content-type", String.Format("multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"));
+            //request.AddParameter("multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
+            //    "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\n" +
+            //    "Content-Disposition: form-data; name=\"action\"\r\n\r\nCheckLogin\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\n" +
+            //    "Content-Disposition: form-data; name=\"username\"\r\n\r\naresh\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\n" +
+            //    "Content-Disposition: form-data; name=\"password\"\r\n\r\nabcd1234\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--"
+            //    , ParameterType.RequestBody);
+
             IRestResponse response = client.Execute(request);
             return response.Content.ToString();
         }
@@ -131,25 +140,7 @@ namespace VRegistration.BLL
             IRestResponse response = client.Execute(request);
             return response.Content.ToString();
         }
-        public static string getExchangeList()
-        {
-            string action = "getExchangeList";
-            var client = new RestClient(REST_URL + action);
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("cache-control", "no-cache");
 
-            Dictionary<string, string> dictionary = new Dictionary<string, string>();
-            dictionary.Add("action", action);
-
-
-            Tuple<string, string, string> paramTuple = GetMultipartFormData(dictionary);
-            request.AddHeader("content-type", String.Format("multipart/form-data; boundary=----{0}", paramTuple.Item3));
-
-            request.AddParameter(paramTuple.Item1, paramTuple.Item2, ParameterType.RequestBody);
-
-            IRestResponse response = client.Execute(request);
-            return response.Content.ToString();
-        }
         public static string getIR(string ir)
         {
             //Show User details from webservice
